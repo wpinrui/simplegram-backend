@@ -1,0 +1,6 @@
+.env
+bin/
+*.local
+*.log
+*.db
+vendor/
