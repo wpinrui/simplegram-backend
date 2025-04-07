@@ -20,16 +20,22 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	createUsersTable(db)
-	insertUser(db, User{
-		Username:       "testuser",
-		HashedPassword: "hashedpassword123",
-	})
+	// Ensure the connection is available before proceeding
 	defer db.Close()
+
 	err = db.Ping()
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	err = createUsersTable(db)
+	if err != nil {
+		log.Fatal(err)
+	}
+	insertUser(db, User{
+		Username:       "testuser",
+		HashedPassword: "hashedpassword123",
+	})
 }
 
 func createUsersTable(db *sql.DB) error {
@@ -41,7 +47,7 @@ func createUsersTable(db *sql.DB) error {
 	);`
 	_, err := db.Exec(query)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	return nil
 }
@@ -52,5 +58,6 @@ func insertUser(db *sql.DB, user User) error {
 	if err != nil {
 		return err
 	}
+	log.Printf("User inserted with ID: %d\n", user.ID)
 	return nil
 }
