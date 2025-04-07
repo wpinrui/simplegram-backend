@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"simplegram/internal/models"
 	"simplegram/internal/services"
+	"simplegram/internal/utilities"
 )
 
 func CreateUser(dbConn *sql.DB) http.HandlerFunc {
@@ -21,7 +22,7 @@ func CreateUser(dbConn *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		hashedPassword := "hashedPassword" // TODO: Hash
+		hashedPassword := utilities.HashPassword(userRequest.Password)
 
 		user := models.User{
 			Username:       userRequest.Username,
