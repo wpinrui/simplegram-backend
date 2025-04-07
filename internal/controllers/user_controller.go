@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"simplegram/internal/models"
 	"simplegram/internal/services"
@@ -20,14 +21,21 @@ func CreateUser(dbConn *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		hashedPassword := "hashedPassword"
+		hashedPassword := "hashedPassword" // TODO: Hash
 
 		user := models.User{
 			Username:       userRequest.Username,
 			HashedPassword: hashedPassword,
 		}
 
-		if err := services.CreateUser(dbConn, &user); err != nil {
+		err := services.CreateUser(dbConn, &user)
+		if err != nil {
+
+			if errors.Is(err, services.ErrUsernameExists) {
+				http.Error(w, "Username already exists", http.StatusUnprocessableEntity)
+				return
+			}
+
 			http.Error(w, "Error creating user", http.StatusInternalServerError)
 			return
 		}
