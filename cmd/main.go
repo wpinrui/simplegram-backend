@@ -1,5 +1,9 @@
+package main
+
 import (
 	"database/sql"
+	"log"
+
 	_ "github.com/lib/pq"
 )
 
@@ -16,6 +20,11 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	createUsersTable(db)
+	insertUser(db, User{
+		Username:       "testuser",
+		HashedPassword: "hashedpassword123",
+	})
 	defer db.Close()
 	err = db.Ping()
 	if err != nil {
@@ -34,6 +43,7 @@ func createUsersTable(db *sql.DB) error {
 	if err != nil {
 		log.Fatal(err)
 	}
+	return nil
 }
 
 func insertUser(db *sql.DB, user User) error {
