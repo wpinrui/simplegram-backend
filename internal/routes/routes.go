@@ -10,5 +10,6 @@ import (
 func SetupRoutes(dbConn *sql.DB) *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/users", controllers.CreateUser(dbConn)).Methods("POST")
+	router.HandleFunc("/users/login", controllers.Login(dbConn)).Methods("POST")
 	return router
 }

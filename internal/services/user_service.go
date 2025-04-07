@@ -33,6 +33,26 @@ func CreateUser(dbConn *sql.DB, username string, password string) (string, error
 	return token, err
 }
 
+func Login(dbConn *sql.DB, username string, password string) (string, error) {
+	hashedPassword := utilities.HashPassword(password)
+	query := `SELECT username, hashed_password FROM users WHERE username = $1 AND hashed_password = $2;`
+	user := &models.User{}
+	err := dbConn.QueryRow(query, username, hashedPassword).Scan(&user.Username, &user.HashedPassword)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", ErrInvalidCredentials
+		}
+		log.Println("Error querying user:", err)
+		return "", err
+	}
+	token, err := auth.GenerateJwt(user)
+	if err != nil {
+		log.Println("Error generating JWT:", err)
+		return "", err
+	}
+	return token, nil
+}
+
 func isUniqueViolation(err error) bool {
 	pqErr, ok := err.(*pq.Error)
 	return ok && pqErr.Code == "23505"
