@@ -5,9 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"simplegram/internal/models"
 	"simplegram/internal/services"
-	"simplegram/internal/utilities"
 )
 
 func CreateUser(dbConn *sql.DB) http.HandlerFunc {
@@ -22,26 +20,22 @@ func CreateUser(dbConn *sql.DB) http.HandlerFunc {
 			return
 		}
 
-		hashedPassword := utilities.HashPassword(userRequest.Password)
-
-		user := models.User{
-			Username:       userRequest.Username,
-			HashedPassword: hashedPassword,
-		}
-
-		err := services.CreateUser(dbConn, &user)
+		token, err := services.CreateUser(dbConn, userRequest.Username, userRequest.Password)
 		if err != nil {
-
 			if errors.Is(err, services.ErrUsernameExists) {
 				http.Error(w, "Username already exists", http.StatusUnprocessableEntity)
 				return
 			}
-
 			http.Error(w, "Error creating user", http.StatusInternalServerError)
 			return
 		}
 
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(user)
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		response := map[string]string{"token": token}
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			http.Error(w, "Error encoding response", http.StatusInternalServerError)
+			return
+		}
 	}
 }
