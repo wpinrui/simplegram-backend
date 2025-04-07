@@ -8,7 +8,6 @@ import (
 )
 
 func main() {
-	// Initialize the database connection
 	dbConn, err := db.InitDB()
 	if err != nil {
 		log.Fatal("Failed to connect to the database:", err)

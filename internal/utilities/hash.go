@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 )
 
-// HashPassword hashes a password using SHA-256 and returns the hash as a string.
 func HashPassword(password string) string {
 	h := sha256.New()
 	h.Write([]byte(password))
