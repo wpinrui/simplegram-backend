@@ -11,9 +11,23 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-
+  
+  postgres_test:
+    image: postgres
+    container_name: pg-test-container
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: simplegram_test
+    ports:
+      - "5433:5432"
+    volumes:
+      - pgdata_test:/var/lib/postgresql/data
+      
 volumes:
   pgdata:
+  pgdata_test:
 
 # docker volume rm pgdata
 # the above command will remove the volume
