@@ -5,3 +5,4 @@ bin/
 *.db
 vendor/
 .env.test
+Makefile

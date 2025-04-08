@@ -1,0 +1,25 @@
+MIGRATE_PATH=internal/db/migration
+DB_URL_SIMPLEGRAM=postgresql://<username>:<password>@localhost:5432/simplegram?sslmode=disable
+DB_URL_SIMPLEGRAM_TEST=postgresql://<username>:<password>@localhost:5432/simplegram_test?sslmode=disable
+
+# Run migrations for simplegram
+migrate-up-simplegram:
+	@migrate -path $(MIGRATE_PATH) -database "$(DB_URL_SIMPLEGRAM)" -verbose up
+
+# Run migrations for simplegram_test
+migrate-up-simplegram-test:
+	@migrate -path $(MIGRATE_PATH) -database "$(DB_URL_SIMPLEGRAM_TEST)" -verbose up
+
+# Run migrations for both databases
+migrate-up-all: migrate-up-simplegram migrate-up-simplegram-test
+
+# Rollback migrations for simplegram
+migrate-down-simplegram:
+	@migrate -path $(MIGRATE_PATH) -database "$(DB_URL_SIMPLEGRAM)" -verbose down
+
+# Rollback migrations for simplegram_test
+migrate-down-simplegram-test:
+	@migrate -path $(MIGRATE_PATH) -database "$(DB_URL_SIMPLEGRAM_TEST)" -verbose down
+
+# Rollback migrations for both databases
+migrate-down-all: migrate-down-simplegram migrate-down-simplegram-test
