@@ -1,30 +1,12 @@
-package services_test
+package test
 
 import (
-	"database/sql"
-	"log"
-	"os"
-	"simplegram/internal/db"
 	"simplegram/internal/services"
 	"testing"
 
 	_ "github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
-
-var testDB *sql.DB
-
-func TestMain(m *testing.M) {
-	var err error
-	testDB, err = db.InitDB()
-	if err != nil {
-		log.Fatal("Failed to connect to test DB:", err)
-	}
-	defer testDB.Close()
-
-	code := m.Run()
-	os.Exit(code)
-}
 
 func cleanupUser(username string) {
 	_, _ = testDB.Exec(`DELETE FROM users WHERE username = $1`, username)
