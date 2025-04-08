@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/joho/godotenv"
 )
 
 func GenerateJwt(user *models.User) (string, error) {
@@ -15,12 +14,8 @@ func GenerateJwt(user *models.User) (string, error) {
 		key []byte
 		t   *jwt.Token
 		s   string
+		err error
 	)
-	err := godotenv.Load()
-	if err != nil {
-		return "", fmt.Errorf("error loading .env file: %w", err)
-	}
-
 	key = []byte(os.Getenv("SECRET_KEY"))
 	t = jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"username": user.Username,
