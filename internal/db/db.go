@@ -6,8 +6,6 @@ import (
 	"log"
 	"os"
 	"simplegram/internal/models"
-
-	_ "github.com/lib/pq"
 )
 
 type DB struct {
@@ -40,7 +38,7 @@ func InitDB() (*DB, error) {
 
 func (db *DB) CloseDB() {
 	if db != nil && db.DB != nil {
-		err := db.DB.Close()
+		err := db.Close()
 		if err != nil {
 			log.Fatal("Failed to close database connection:", err)
 		}
