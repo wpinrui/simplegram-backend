@@ -1,1 +1,0 @@
-godotenv -f .env.test go test

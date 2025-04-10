@@ -1,15 +1,30 @@
 package routes
 
 import (
-	"database/sql"
+	"log"
 	"simplegram/internal/controllers"
+	"simplegram/internal/db"
+	internalErrors "simplegram/internal/errors"
+	"simplegram/internal/services"
+	"simplegram/internal/utilities"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(dbConn *sql.DB) *mux.Router {
-	router := mux.NewRouter()
-	router.HandleFunc("/users", controllers.CreateUser(dbConn)).Methods("POST")
-	router.HandleFunc("/users/login", controllers.Login(dbConn)).Methods("POST")
+func SetupRoutes() *gin.Engine {
+	// Initialize the database connection
+	dbConn, err := db.InitDB()
+	if err != nil {
+		log.Fatal("Failed to initialize the database: ", err)
+	}
+
+	userService := services.NewUserService(dbConn, utilities.NewUtilities(), internalErrors.NewError())
+	userController := controllers.NewUserController(userService)
+
+	router := gin.Default()
+
+	router.POST("/users", userController.CreateUser)
+	router.POST("/users/login", userController.Login)
+
 	return router
 }

@@ -1,4 +1,4 @@
-package auth
+package utilities
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateJwt(user *models.User) (string, error) {
+func (u *Utilities) GenerateJwt(user *models.User) (string, error) {
 	var (
 		key []byte
 		t   *jwt.Token
