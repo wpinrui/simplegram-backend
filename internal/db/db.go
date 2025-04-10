@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"log"
 	"os"
-
-	_ "github.com/lib/pq"
+	"simplegram/internal/models"
 )
 
-var DB *sql.DB
+type DB struct {
+	*sql.DB
+}
 
-func InitDB() (*sql.DB, error) {
-
+func InitDB() (*DB, error) {
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbUser := os.Getenv("DB_USER")
@@ -33,15 +33,28 @@ func InitDB() (*sql.DB, error) {
 		return nil, err
 	}
 
-	DB = db
-	return db, nil
+	return &DB{db}, nil
 }
 
-func CloseDB() {
-	if DB != nil {
-		err := DB.Close()
+func (db *DB) CloseDB() {
+	if db != nil && db.DB != nil {
+		err := db.Close()
 		if err != nil {
 			log.Fatal("Failed to close database connection:", err)
 		}
 	}
+}
+
+func (db *DB) InsertUser(username, hashedPassword string) (int, error) {
+	query := `INSERT INTO users (username, hashed_password) VALUES ($1, $2) RETURNING id`
+	var userID int
+	err := db.QueryRow(query, username, hashedPassword).Scan(&userID)
+	return userID, err
+}
+
+func (db *DB) GetUserByUsername(username string) (*models.User, error) {
+	query := `SELECT id, username, hashed_password FROM users WHERE username = $1`
+	user := &models.User{}
+	err := db.QueryRow(query, username).Scan(&user.ID, &user.Username, &user.HashedPassword)
+	return user, err
 }

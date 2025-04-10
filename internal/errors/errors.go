@@ -1,7 +1,23 @@
-// internal/services/errors.go
-package services
+package errors
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/lib/pq"
+)
+
+type Error struct{}
+
+func NewError() *Error {
+	return &Error{}
+}
+
+func (e *Error) IsUniqueViolation(err error) bool {
+	if pgErr, ok := err.(*pq.Error); ok {
+		return pgErr.Code == "23505"
+	}
+	return false
+}
 
 var ErrUsernameExists = errors.New("username already exists")
 var ErrInvalidCredentials = errors.New("invalid credentials")

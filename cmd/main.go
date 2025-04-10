@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 	"simplegram/internal/db"
 	"simplegram/internal/routes"
 
@@ -14,16 +13,17 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
 	dbConn, err := db.InitDB()
 	if err != nil {
 		log.Fatal("Failed to connect to the database:", err)
 	}
-	defer db.CloseDB()
+	defer dbConn.CloseDB()
 
-	router := routes.SetupRoutes(dbConn)
+	router := routes.SetupRoutes()
 
 	log.Println("Server started on :8080")
-	if err := http.ListenAndServe(":8080", router); err != nil {
+	if err := router.Run(":8080"); err != nil {
 		log.Fatal("Server failed:", err)
 	}
 }

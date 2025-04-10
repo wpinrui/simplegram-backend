@@ -1,12 +1,15 @@
 package utilities
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func HashPassword(password string) string {
-	h := sha256.New()
-	h.Write([]byte(password))
-	return hex.EncodeToString(h.Sum(nil))
+// HashPassword hashes the password using bcrypt.
+func (u *Utilities) HashPassword(password string) (string, error) {
+	// bcrypt.DefaultCost is the default cost for bcrypt
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(hashedPassword), nil
 }
