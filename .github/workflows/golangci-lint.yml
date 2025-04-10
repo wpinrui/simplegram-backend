@@ -1,4 +1,4 @@
-name: golangci-lint
+name: golangci-lint and test
 on:
   push:
     branches:
@@ -12,8 +12,8 @@ permissions:
   # pull-requests: read
 
 jobs:
-  golangci:
-    name: lint
+  golangci-lint:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,3 +24,16 @@ jobs:
         uses: golangci/golangci-lint-action@v7
         with:
           version: v2.0
+
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    needs: golangci-lint # This ensures that tests only run if linting passes
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - name: Run tests
+        run: |
+          go test -v ./...
